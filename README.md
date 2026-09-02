@@ -1,75 +1,31 @@
-# React + TypeScript + Vite
+# 🏔️ Sahyadri Sathi
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A trek planning app for the Western Ghats (Sahyadri range) — browse real treks, filter by difficulty, and see who else is planning to go on the same date.
 
-Currently, two official plugins are available:
+**Live demo:** [add your Vercel link here once deployed]
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Why I built this
 
-## React Compiler
+Most trek planning in Maharashtra happens through scattered WhatsApp groups and word of mouth. Sahyadri Sathi brings it into one place — browse real Sahyadri treks like Harishchandragad, Rajmachi, and Kalsubai, pick a date, and instantly see if other trekkers are headed the same way.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- 🔍 Browse and filter treks by difficulty (Easy / Moderate / Difficult)
+- 🔐 User authentication — sign up, log in, log out
+- 📅 Plan a trek for a specific date
+- 👥 See how many other users are planning the same trek on the same date
+- 📱 Fully responsive design
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend:** React, TypeScript, Tailwind CSS
+- **Backend & Database:** Supabase (PostgreSQL + Auth)
+- **Deployment:** Vercel
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Screenshots
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+*(add 2-3 screenshots here — homepage with cards, and the plan-to-go feature in action)*
 
-```
+## Running locally
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+Clone the repo and install dependencies:
