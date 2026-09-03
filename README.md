@@ -25,9 +25,8 @@ Most trek planning in Maharashtra happens through scattered WhatsApp groups and 
  
 
 ## Screenshots
-
-![Homepage](images/homepage.png)
 ![Signup Page](images/signup.png)
+![Homepage](images/homepage.png)
 ![My Treks Page](images/mytreks.png)
 
 ## Running locally
