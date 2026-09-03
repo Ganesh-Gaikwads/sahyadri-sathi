@@ -126,15 +126,23 @@ function App() {
   return (
     <div className="min-h-screen bg-stone-50 px-6 py-10">
       <div className="max-w-5xl mx-auto">
-                <div className="flex justify-between items-center mb-2">
-          <h1 className="text-4xl font-bold text-stone-800">Sahyadri Sathi</h1>
-          <div className="flex items-center gap-4">
-            <Link to="/my-treks" className="text-sm text-stone-600 underline">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🏔️</span>
+            <h1 className="text-3xl sm:text-4xl font-bold text-stone-800">
+              Sahyadri Sathi
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/my-treks"
+              className="text-sm font-medium text-stone-700 bg-white border border-stone-300 px-4 py-1.5 rounded-full hover:bg-stone-100 transition"
+            >
               My Treks
             </Link>
             <button
               onClick={() => supabase.auth.signOut()}
-              className="text-sm text-stone-500 underline"
+              className="text-sm font-medium text-stone-500 hover:text-stone-800 transition"
             >
               Sign out
             </button>
@@ -169,7 +177,7 @@ function App() {
               <img
                 src={trek.image_url}
                 alt={trek.name}
-                className="w-full h-40 object-cover rounded-lg mb-3"
+                className="w-full h-40 object-cover rounded-lg mb-3 transition-transform duration-200 hover:scale-[1.02]"
               />
               <div className="flex justify-between items-start mb-2">
                 <Link to={`/trek/${trek.id}`}>

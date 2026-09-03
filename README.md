@@ -22,9 +22,13 @@ Most trek planning in Maharashtra happens through scattered WhatsApp groups and 
 - **Backend & Database:** Supabase (PostgreSQL + Auth)
 - **Deployment:** Vercel
 
+ 
+
 ## Screenshots
 
-*(add 2-3 screenshots here — homepage with cards, and the plan-to-go feature in action)*
+![Homepage](images/homepage.png)
+![Signup Page](images/signup.png)
+![My Treks Page](images/mytreks.png)
 
 ## Running locally
 
