@@ -1,101 +1,144 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
-import Auth from './Auth'
-import type { Session } from '@supabase/supabase-js'
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
+import Auth from "./Auth";
+import type { Session } from "@supabase/supabase-js";
+import { Link } from "react-router-dom";
 
 interface Trek {
-  id: number
-  name: string
-  region: string
-  difficulty: string
-  distance_km: number
-  best_season: string
-  description: string
+  id: number;
+  name: string;
+  region: string;
+  difficulty: string;
+  distance_km: number;
+  best_season: string;
+  description: string;
+  image_url: string;
 }
 
 function App() {
-  const [session, setSession] = useState<Session | null>(null)
-  const [treks, setTreks] = useState<Trek[]>([])
-  const [loading, setLoading] = useState(true)
-  const [difficultyFilter, setDifficultyFilter] = useState<string>("All")
-  const [plannedDates, setPlannedDates] = useState<{ [trekId: number]: string }>({})
-  const [plansByTrek, setPlansByTrek] = useState<{ [trekId: number]: number }>({})
+  const [session, setSession] = useState<Session | null>(null);
+  const [treks, setTreks] = useState<Trek[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [difficultyFilter, setDifficultyFilter] = useState<string>("All");
+  const [plannedDates, setPlannedDates] = useState<{
+    [trekId: number]: string;
+  }>({});
+  const [plansByTrek, setPlansByTrek] = useState<{ [trekId: number]: number }>(
+    {},
+  );
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
+      setSession(session);
+    });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
 
-    return () => listener.subscription.unsubscribe()
-  }, [])
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     async function fetchTreks() {
-      const { data, error } = await supabase.from('treks').select('*')
+      const { data, error } = await supabase.from("treks").select("*");
       if (error) {
-        console.error('Error fetching treks:', error)
+        console.error("Error fetching treks:", error);
+        setFetchError(true);
       } else {
-        setTreks(data as Trek[])
+        setTreks(data as Trek[]);
       }
-      setLoading(false)
+      setLoading(false);
     }
-    fetchTreks()
-  }, [])
+    fetchTreks();
+  }, []);
 
   async function fetchPlanCount(trekId: number, date: string) {
     const { count } = await supabase
-      .from('planned_treks')
-      .select('*', { count: 'exact', head: true })
-      .eq('trek_id', trekId)
-      .eq('planned_date', date)
+      .from("planned_treks")
+      .select("*", { count: "exact", head: true })
+      .eq("trek_id", trekId)
+      .eq("planned_date", date);
 
-    setPlansByTrek((prev) => ({ ...prev, [trekId]: count ?? 0 }))
+    setPlansByTrek((prev) => ({ ...prev, [trekId]: count ?? 0 }));
   }
 
   async function handlePlanTrek(trekId: number) {
-    const date = plannedDates[trekId]
-    if (!date || !session) return
+    const date = plannedDates[trekId];
+    if (!date || !session) return;
 
-    const { error } = await supabase.from('planned_treks').insert({
+    const { error } = await supabase.from("planned_treks").insert({
       user_id: session.user.id,
       trek_id: trekId,
       planned_date: date,
-    })
+    });
 
     if (error) {
-      alert('Error saving plan: ' + error.message)
+      alert("Error saving plan: " + error.message);
     } else {
-      alert('Trek planned!')
-      fetchPlanCount(trekId, date)
+      alert("Trek planned!");
+      fetchPlanCount(trekId, date);
     }
   }
 
-  if (!session) return <Auth />
+  if (!session) return <Auth />;
 
-  if (loading) return <p>Loading treks...</p>
+  if (loading)
+    return (
+      <div className="min-h-screen bg-stone-50 px-6 py-10">
+        <div className="max-w-5xl mx-auto">
+          <div className="h-10 w-64 bg-stone-200 rounded mx-auto mb-10 animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl border border-stone-200 p-5 animate-pulse"
+              >
+                <div className="w-full h-40 bg-stone-200 rounded-lg mb-3" />
+                <div className="h-4 w-2/3 bg-stone-200 rounded mb-2" />
+                <div className="h-3 w-1/2 bg-stone-200 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+  if (fetchError)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 px-6">
+        <p className="text-stone-600">
+          Something went wrong loading treks. Please refresh the page.
+        </p>
+      </div>
+    );
 
   const filteredTreks =
     difficultyFilter === "All"
       ? treks
       : treks.filter((t) =>
-          t.difficulty.toLowerCase().includes(difficultyFilter.toLowerCase())
-        )
+          t.difficulty.toLowerCase().includes(difficultyFilter.toLowerCase()),
+        );
 
   return (
     <div className="min-h-screen bg-stone-50 px-6 py-10">
       <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center mb-2">
           <h1 className="text-4xl font-bold text-stone-800">Sahyadri Sathi</h1>
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="text-sm text-stone-500 underline"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-4">
+            <Link to="/my-treks" className="text-sm text-stone-600 underline">
+              My Treks
+            </Link>
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="text-sm text-stone-500 underline"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
         <p className="text-center text-stone-500 mb-10">
           Discover treks across the Sahyadris
@@ -123,18 +166,25 @@ function App() {
               key={trek.id}
               className="bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md transition"
             >
+              <img
+                src={trek.image_url}
+                alt={trek.name}
+                className="w-full h-40 object-cover rounded-lg mb-3"
+              />
               <div className="flex justify-between items-start mb-2">
-                <h2 className="text-lg font-semibold text-stone-800">
-                  {trek.name}
-                </h2>
+                <Link to={`/trek/${trek.id}`}>
+                  <h2 className="text-lg font-semibold text-stone-800 hover:underline cursor-pointer">
+                    {trek.name}
+                  </h2>
+                </Link>
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-full ${
                     trek.difficulty.toLowerCase().includes("easy")
                       ? "bg-green-100 text-green-700"
                       : trek.difficulty.toLowerCase().includes("difficult") ||
-                        trek.difficulty.toLowerCase().includes("strenuous")
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
+                          trek.difficulty.toLowerCase().includes("strenuous")
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
                   {trek.difficulty}
@@ -148,11 +198,11 @@ function App() {
               <div className="border-t border-stone-100 pt-3 space-y-2">
                 <input
                   type="date"
-                  value={plannedDates[trek.id] || ''}
+                  value={plannedDates[trek.id] || ""}
                   onChange={(e) => {
-                    const date = e.target.value
-                    setPlannedDates((prev) => ({ ...prev, [trek.id]: date }))
-                    if (date) fetchPlanCount(trek.id, date)
+                    const date = e.target.value;
+                    setPlannedDates((prev) => ({ ...prev, [trek.id]: date }));
+                    if (date) fetchPlanCount(trek.id, date);
                   }}
                   className="w-full border border-stone-300 rounded-lg px-2 py-1.5 text-sm"
                 />
@@ -163,18 +213,21 @@ function App() {
                 >
                   I'm planning to go
                 </button>
-                {plansByTrek[trek.id] !== undefined && plannedDates[trek.id] && (
-                  <p className="text-xs text-stone-500 text-center">
-                    {plansByTrek[trek.id]} {plansByTrek[trek.id] === 1 ? 'person' : 'people'} going on this date
-                  </p>
-                )}
+                {plansByTrek[trek.id] !== undefined &&
+                  plannedDates[trek.id] && (
+                    <p className="text-xs text-stone-500 text-center">
+                      {plansByTrek[trek.id]}{" "}
+                      {plansByTrek[trek.id] === 1 ? "person" : "people"} going
+                      on this date
+                    </p>
+                  )}
               </div>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
